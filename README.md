@@ -30,16 +30,12 @@ Colouring and snippets need no compiler at all.
 
 ## Installing it
 
-It is not on the Marketplace yet, so it is packaged from this repository and
-installed from the file. That takes [Node.js](https://nodejs.org) 22 or later
-and VS Code's `code` command:
+It is on the Marketplace as
+[Hive Language](https://marketplace.visualstudio.com/items?itemName=R0DR160HM.hive-lang).
+Search for that name in VS Code's Extensions view, or install it from a shell:
 
 ```sh
-$ git clone https://github.com/R0DR160HM/hive-vscode
-$ cd hive-vscode
-$ npm install
-$ npm run package
-$ code --install-extension hive-lang.vsix
+$ code --install-extension R0DR160HM.hive-lang
 ```
 
 Then open a `.hive` file.
@@ -118,7 +114,8 @@ folder and `test/sample.hive` in it.
   `test/grammar.test.js` names.
 * `src/extension.js` is the client, which starts `hive lsp`. `npm run build`
   bundles it into `dist/`, and `npm run package` does that and writes
-  `hive-lang.vsix`.
+  `hive-lang.vsix`, which `code --install-extension hive-lang.vsix` installs.
+  Packaging takes [Node.js](https://nodejs.org) 22 or later.
 * `test/sample.hive` is a program with something of everything in it:
   `hive run test/sample.hive` runs it.
 
