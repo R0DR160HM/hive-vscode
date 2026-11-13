@@ -1,0 +1,27 @@
+name: build
+
+# The grammar's tests, and the extension packaged the way the README says to: what
+# comes out is kept with the run, so a build can be installed without Node.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hive-lang.vsix
+          path: hive-lang.vsix

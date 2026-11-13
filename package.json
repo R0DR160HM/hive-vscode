@@ -1,0 +1,127 @@
+{
+  "name": "hive-lang",
+  "displayName": "Hive",
+  "description": "The Hive language: colouring, and errors as you type, hover, go to definition, completion, an outline and formatting from `hive lsp`.",
+  "version": "0.2.0",
+  "publisher": "hive-lang",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "homepage": "https://hive-lang.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/R0DR160HM/hive-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/R0DR160HM/hive-vscode/issues"
+  },
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters",
+    "Snippets"
+  ],
+  "keywords": [
+    "hive",
+    "hive-lang",
+    "language server",
+    "lsp"
+  ],
+  "main": "./dist/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Hive files are coloured, and the language server is not started: it reads what a file imports, a git repository included."
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "Hive files are coloured, and the language server is not started: it reads files from disk."
+    }
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "hive",
+        "aliases": [
+          "Hive",
+          "hive"
+        ],
+        "extensions": [
+          ".hive"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/hive.svg",
+          "dark": "./images/hive.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "hive",
+        "scopeName": "source.hive",
+        "path": "./syntaxes/hive.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.sql": "sql",
+          "meta.embedded.line.hive": "hive"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "hive",
+        "path": "./snippets/hive.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "hive.restartServer",
+        "title": "Restart Language Server",
+        "category": "Hive"
+      }
+    ],
+    "configuration": {
+      "title": "Hive",
+      "properties": {
+        "hive.path": {
+          "type": "string",
+          "default": "hive",
+          "scope": "machine-overridable",
+          "markdownDescription": "The Hive compiler to start as the language server, when it is not `hive` on the `PATH`."
+        },
+        "hive.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "scope": "window",
+          "markdownDescription": "Writes what the editor and `hive lsp` say to each other to the **Hive** channel of the Output panel."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[hive]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
+      }
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/extension.js --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js",
+    "test": "node --test test/grammar.test.js",
+    "vscode:prepublish": "npm run build -- --minify",
+    "package": "vsce package --no-dependencies --out hive-lang.vsix"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^4.1.1",
+    "esbuild": "^0.28.2",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "main": {
+    "prefix": "main",
+    "description": "Where a program starts",
+    "body": [
+      "proc main(): void {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "proc": {
+    "prefix": "proc",
+    "description": "A proc",
+    "body": [
+      "proc ${1:name}(${2}): ${3:void} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "func": {
+    "prefix": "func",
+    "description": "A func",
+    "body": [
+      "func ${1:name}(${2}): ${3:Str} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "query": {
+    "prefix": "query",
+    "description": "A query, whose body is SQL",
+    "body": [
+      "query ${1:name}(${2}): ${3:Row[dyn]} {",
+      "\t${0:SELECT}",
+      "}"
+    ]
+  },
+  "type": {
+    "prefix": "type",
+    "description": "A struct",
+    "body": [
+      "type ${1:Name} {",
+      "\t${2:field}: ${3:Str}",
+      "}"
+    ]
+  },
+  "union": {
+    "prefix": "union",
+    "description": "A tagged union",
+    "body": [
+      "type ${1:Name} {",
+      "\t${2:First} { ${3:field}: ${4:Str} }",
+      "\t${5:Second}",
+      "}"
+    ]
+  },
+  "test": {
+    "prefix": "test",
+    "description": "A test",
+    "body": [
+      "test \"${1:what holds}\" {",
+      "\tassert $0",
+      "}"
+    ]
+  },
+  "for": {
+    "prefix": "for",
+    "description": "A counting loop",
+    "body": [
+      "for ${1:i} := 0; ${1:i} < ${2:count}; ${1:i}++ {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "for each": {
+    "prefix": ["foreach", "for each"],
+    "description": "A loop over a vector",
+    "body": [
+      "for each ${1:item} in ${2:items} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "if is": {
+    "prefix": ["ifis", "if is"],
+    "description": "A match that binds",
+    "body": [
+      "if ${1:value} is ${2:Result.Ok(${3:found})} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "if bounds": {
+    "prefix": ["ifbounds", "if bounds"],
+    "description": "A guarded index",
+    "body": [
+      "if ${1:vector} bounds ${2:index} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "switch": {
+    "prefix": "switch",
+    "description": "A switch, which takes every value",
+    "body": [
+      "switch ${1:value} {",
+      "\t${2:_} { $0 }",
+      "}"
+    ]
+  }
+}

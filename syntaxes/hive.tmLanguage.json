@@ -1,0 +1,889 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Hive",
+  "scopeName": "source.hive",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#import" },
+    { "include": "#query" },
+    { "include": "#type-declaration" },
+    { "include": "#callable-declaration" },
+    { "include": "#code" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.double-slash.hive",
+      "match": "(//).*$",
+      "captures": {
+        "1": { "name": "punctuation.definition.comment.hive" }
+      }
+    },
+
+    "import": {
+      "name": "meta.import.hive",
+      "match": "\\b(import)\\b(?:[ \\t]+(?:(\"[^\"\\n]*\"?)|(hive(?:\\.\\w+)*)(?!\\S)|(\\S+)))?(?:[ \\t]+(as)[ \\t]+([A-Za-z_]\\w*))?",
+      "captures": {
+        "1": { "name": "keyword.control.import.hive" },
+        "2": { "name": "string.quoted.double.import.hive" },
+        "3": { "name": "entity.name.namespace.hive" },
+        "4": { "name": "string.unquoted.import.hive" },
+        "5": { "name": "keyword.control.as.hive" },
+        "6": { "name": "entity.name.namespace.hive" }
+      }
+    },
+
+    "query": {
+      "name": "meta.query.hive",
+      "begin": "\\b(query)\\b(?:\\s+([A-Za-z_]\\w*))?",
+      "beginCaptures": {
+        "1": { "name": "storage.type.query.hive" },
+        "2": { "name": "entity.name.function.hive" }
+      },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#parameters" },
+        { "include": "#sql-body" },
+        { "include": "#type-expression" }
+      ]
+    },
+
+    "callable-declaration": {
+      "patterns": [
+        {
+          "name": "meta.function.hive",
+          "begin": "\\b(proc|func)\\s+([A-Za-z_]\\w*)\\s*(?=\\()",
+          "beginCaptures": {
+            "1": { "name": "storage.type.function.hive" },
+            "2": { "name": "entity.name.function.hive" }
+          },
+          "end": "(?<=\\))",
+          "patterns": [
+            { "include": "#parameters" }
+          ]
+        },
+        {
+          "match": "\\b(proc|func)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": { "name": "storage.type.function.hive" },
+            "2": { "name": "entity.name.function.hive" }
+          }
+        }
+      ]
+    },
+
+    "parameters": {
+      "name": "meta.parameters.hive",
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.parens.begin.hive" }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.parens.end.hive" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "match": "\\b([a-z_]\\w*)\\s*(:)",
+          "captures": {
+            "1": { "name": "variable.parameter.hive" },
+            "2": { "name": "punctuation.separator.colon.hive" }
+          }
+        },
+        { "include": "#type-expression" }
+      ]
+    },
+
+    "type-declaration": {
+      "patterns": [
+        {
+          "name": "meta.type.hive",
+          "begin": "\\b(type)\\s+([A-Za-z_]\\w*)\\s*(\\{)",
+          "beginCaptures": {
+            "1": { "name": "storage.type.type.hive" },
+            "2": { "name": "entity.name.type.hive" },
+            "3": { "name": "punctuation.section.block.begin.hive" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.block.end.hive" }
+          },
+          "patterns": [
+            { "include": "#type-body" }
+          ]
+        },
+        {
+          "match": "\\b(type)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": { "name": "storage.type.type.hive" },
+            "2": { "name": "entity.name.type.hive" }
+          }
+        }
+      ]
+    },
+
+    "type-body": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#field-annotation" },
+        {
+          "name": "meta.field.hive",
+          "begin": "\\b([a-z_]\\w*)\\s*(:)",
+          "beginCaptures": {
+            "1": { "name": "variable.other.member.hive" },
+            "2": { "name": "punctuation.separator.colon.hive" }
+          },
+          "end": "(?=[,}]|--|//|$)",
+          "patterns": [
+            { "include": "#type-expression" }
+          ]
+        },
+        {
+          "begin": "\\{",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.block.begin.hive" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.block.end.hive" }
+          },
+          "patterns": [
+            { "include": "#type-body" }
+          ]
+        },
+        {
+          "name": "variable.other.enummember.hive",
+          "match": "\\b_?[A-Z]\\w*\\b"
+        },
+        {
+          "name": "punctuation.separator.comma.hive",
+          "match": ","
+        }
+      ]
+    },
+
+    "field-annotation": {
+      "patterns": [
+        {
+          "name": "punctuation.definition.annotation.hive",
+          "match": "--"
+        },
+        {
+          "match": "\\b(JSON|URL|Flag)\\s+(as)\\b[ \\t]*(?:(\"(?:[^\"\\\\]|\\\\.)*\")|(\\w+(?:-\\w+)*))?",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.hive" },
+            "2": { "name": "keyword.control.as.hive" },
+            "3": { "name": "string.quoted.double.hive" },
+            "4": { "name": "string.unquoted.hive" }
+          }
+        },
+        {
+          "begin": "\\b(Default)\\s+(as)\\b",
+          "beginCaptures": {
+            "1": { "name": "entity.other.attribute-name.hive" },
+            "2": { "name": "keyword.control.as.hive" }
+          },
+          "end": "(?=[;}])|$",
+          "patterns": [
+            { "include": "#string" },
+            { "include": "#raw-string" },
+            { "include": "#atom" },
+            { "include": "#number" },
+            {
+              "name": "constant.language.boolean.hive",
+              "match": "\\b(?:true|false)\\b"
+            },
+            {
+              "name": "keyword.operator.arithmetic.hive",
+              "match": "-"
+            }
+          ]
+        },
+        {
+          "name": "punctuation.terminator.annotation.hive",
+          "match": ";"
+        }
+      ]
+    },
+
+    "type-expression": {
+      "patterns": [
+        {
+          "begin": "<",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.typeparameters.begin.hive" }
+          },
+          "end": ">",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.typeparameters.end.hive" }
+          },
+          "patterns": [
+            { "include": "#type-expression" }
+          ]
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.parens.begin.hive" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.parens.end.hive" }
+          },
+          "patterns": [
+            { "include": "#type-expression" }
+          ]
+        },
+        {
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.brackets.begin.hive" }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.brackets.end.hive" }
+          },
+          "patterns": [
+            { "include": "#type-expression" }
+          ]
+        },
+        {
+          "name": "storage.modifier.hive",
+          "match": "\\b(?:mut|dyn)\\b"
+        },
+        {
+          "name": "storage.type.function.hive",
+          "match": "\\b(?:proc|func)\\b"
+        },
+        {
+          "name": "support.type.primitive.hive",
+          "match": "\\bvoid\\b"
+        },
+        { "include": "#number" },
+        { "include": "#namespace" },
+        { "include": "#constant" },
+        { "include": "#type-name" },
+        {
+          "name": "punctuation.separator.comma.hive",
+          "match": ","
+        },
+        {
+          "name": "punctuation.separator.colon.hive",
+          "match": ":"
+        },
+        {
+          "name": "punctuation.accessor.hive",
+          "match": "\\."
+        },
+        {
+          "name": "variable.other.hive",
+          "match": "\\b[a-z_]\\w*\\b"
+        }
+      ]
+    },
+
+    "code": {
+      "patterns": [
+        { "include": "#string" },
+        { "include": "#raw-string" },
+        { "include": "#keyword" },
+        { "include": "#atom" },
+        { "include": "#number" },
+        { "include": "#namespace" },
+        { "include": "#variant" },
+        { "include": "#constant" },
+        { "include": "#type-name" },
+        { "include": "#call" },
+        { "include": "#label" },
+        { "include": "#operator" },
+        { "include": "#punctuation" },
+        { "include": "#variable" }
+      ]
+    },
+
+    "string": {
+      "name": "string.quoted.double.hive",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.hive" }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.hive" }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.hive",
+          "match": "\\\\."
+        },
+        { "include": "#regex-hole" },
+        { "include": "#interpolation" }
+      ]
+    },
+
+    "raw-string": {
+      "name": "string.quoted.other.backtick.hive",
+      "begin": "`",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.hive" }
+      },
+      "end": "`",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.hive" }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.hive",
+          "match": "\\\\\\{"
+        },
+        { "include": "#regex-hole" },
+        { "include": "#raw-interpolation" }
+      ]
+    },
+
+    "interpolation": {
+      "name": "meta.interpolation.hive",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin.hive" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end.hive" }
+      },
+      "contentName": "meta.embedded.line.hive",
+      "patterns": [
+        { "include": "#braces" },
+        { "include": "#code" }
+      ]
+    },
+
+    "raw-interpolation": {
+      "name": "meta.interpolation.hive",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin.hive" }
+      },
+      "end": "(\\})|(?=`)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.template-expression.end.hive" }
+      },
+      "contentName": "meta.embedded.line.hive",
+      "patterns": [
+        { "include": "#braces" },
+        { "include": "#code" }
+      ]
+    },
+
+    "braces": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.block.begin.hive" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.block.end.hive" }
+      },
+      "patterns": [
+        { "include": "#braces" },
+        { "include": "#code" }
+      ]
+    },
+
+    "regex-hole": {
+      "name": "meta.interpolation.hole.hive",
+      "begin": "(\\{)([a-z][A-Za-z0-9]*) (is) (?=\\()",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.template-expression.begin.hive" },
+        "2": { "name": "variable.other.hive" },
+        "3": { "name": "keyword.operator.expression.is.hive" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end.hive" }
+      },
+      "patterns": [
+        {
+          "name": "string.regexp.hive",
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.group.regexp" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.group.regexp" }
+          },
+          "patterns": [
+            { "include": "#regex" }
+          ]
+        }
+      ]
+    },
+
+    "regex": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.regexp",
+          "match": "\\\\."
+        },
+        {
+          "name": "constant.other.character-class.set.regexp",
+          "begin": "\\[",
+          "end": "\\]",
+          "patterns": [
+            {
+              "name": "constant.character.escape.regexp",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.group.regexp" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.group.regexp" }
+          },
+          "patterns": [
+            { "include": "#regex" }
+          ]
+        },
+        {
+          "name": "keyword.operator.quantifier.regexp",
+          "match": "[*+?]|\\{\\d+(?:,\\d*)?\\}"
+        },
+        {
+          "name": "keyword.operator.or.regexp",
+          "match": "\\|"
+        },
+        {
+          "name": "keyword.control.anchor.regexp",
+          "match": "[\\^$]"
+        }
+      ]
+    },
+
+    "keyword": {
+      "patterns": [
+        {
+          "match": "\\b(with)\\s+(timeout)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.with.hive" },
+            "2": { "name": "keyword.control.timeout.hive" }
+          }
+        },
+        {
+          "match": "(?<=[\\w\\])])[ \\t]+(little)\\b(?=\\s*(?:,|>>))",
+          "captures": {
+            "1": { "name": "storage.modifier.little.hive" }
+          }
+        },
+        {
+          "name": "keyword.control.hive",
+          "match": "\\b(?:if|else|switch|for|each|in|return|break|continue|await|with|assert|panic)\\b"
+        },
+        {
+          "name": "keyword.other.echo.hive",
+          "match": "\\becho\\b"
+        },
+        {
+          "name": "keyword.operator.expression.hive",
+          "match": "\\b(?:is|bounds)\\b"
+        },
+        {
+          "name": "storage.modifier.hive",
+          "match": "\\b(?:mut|dyn|async)\\b"
+        },
+        {
+          "name": "storage.type.hive",
+          "match": "\\b(?:proc|func|query|type|test)\\b"
+        },
+        {
+          "name": "keyword.control.import.hive",
+          "match": "\\bimport\\b"
+        },
+        {
+          "name": "constant.language.boolean.hive",
+          "match": "\\b(?:true|false)\\b"
+        },
+        {
+          "name": "support.type.primitive.hive",
+          "match": "\\bvoid\\b"
+        }
+      ]
+    },
+
+    "atom": {
+      "name": "constant.language.atom.hive constant.other.symbol.hive",
+      "match": "#[A-Za-z_]\\w*"
+    },
+
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.hive",
+          "match": "\\b0x[0-9A-Fa-f_]+\\b"
+        },
+        {
+          "name": "constant.numeric.binary.hive",
+          "match": "\\b0b[01_]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.hive",
+          "match": "\\b\\d(?:_?\\d)*\\.\\d(?:_?\\d)*\\b"
+        },
+        {
+          "name": "constant.numeric.integer.hive",
+          "match": "\\b\\d(?:_?\\d)*\\b"
+        }
+      ]
+    },
+
+    "namespace": {
+      "patterns": [
+        {
+          "match": "\\b(hive)(\\.)(?:([a-z]\\w*)(?=\\.))?",
+          "captures": {
+            "1": { "name": "entity.name.namespace.hive" },
+            "2": { "name": "punctuation.accessor.hive" },
+            "3": { "name": "entity.name.namespace.hive" }
+          }
+        },
+        {
+          "name": "entity.name.namespace.hive",
+          "match": "(?<![.\\w])[a-z_]\\w*(?=\\.[A-Z])"
+        }
+      ]
+    },
+
+    "variant": {
+      "match": "\\b(_?[A-Z]\\w*)(\\.)([A-Z]\\w*)\\b",
+      "captures": {
+        "1": {
+          "patterns": [
+            { "include": "#type-name" }
+          ]
+        },
+        "2": { "name": "punctuation.accessor.hive" },
+        "3": { "name": "variable.other.enummember.hive" }
+      }
+    },
+
+    "constant": {
+      "name": "variable.other.constant.hive",
+      "match": "\\b_?[A-Z][A-Z0-9_]+\\b"
+    },
+
+    "type-name": {
+      "patterns": [
+        {
+          "name": "support.type.primitive.hive",
+          "match": "\\b(?:Str|Bool|Atom|Float(?:32|64)?|Int(?:[1-9]\\d?)?|UInt[1-9]\\d?)\\b"
+        },
+        {
+          "name": "support.type.builtin.hive",
+          "match": "\\b(?:Result|Table|Address|Secret|SecretError)\\b"
+        },
+        {
+          "name": "entity.name.type.hive",
+          "match": "\\b_?[A-Z]\\w*\\b"
+        }
+      ]
+    },
+
+    "call": {
+      "patterns": [
+        {
+          "name": "support.function.builtin.hive",
+          "match": "(?:(?<![.\\w])|(?<=\\bhive\\.))(?:len|bytes|append|prepend|drop|join|split|replaceFirst|replaceAll|indexOf|row|column|toTable|map|filter|filterMap|sort|encode|spawn|at|kill|hide|bypass|reveal)(?=\\s*\\()"
+        },
+        {
+          "name": "entity.name.function.call.hive",
+          "match": "\\b[a-z_]\\w*(?=\\s*\\()"
+        },
+        {
+          "match": "(\\|>)\\s*([a-z_]\\w*)\\b(?!\\s*[.(])",
+          "captures": {
+            "1": { "name": "keyword.operator.pipe.hive" },
+            "2": { "name": "entity.name.function.call.hive" }
+          }
+        }
+      ]
+    },
+
+    "label": {
+      "match": "\\b(?!_\\b)([a-z_]\\w*)(:)(?![=:])(?=\\s)",
+      "captures": {
+        "1": { "name": "variable.parameter.hive" },
+        "2": { "name": "punctuation.separator.colon.hive" }
+      }
+    },
+
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.rest.hive",
+          "match": "\\.\\.\\."
+        },
+        {
+          "name": "keyword.operator.assignment.hive",
+          "match": ":="
+        },
+        {
+          "name": "keyword.operator.pipe.hive",
+          "match": "\\|>"
+        },
+        {
+          "name": "keyword.operator.assignment.compound.hive",
+          "match": "<<=|>>=|\\+=|-=|\\*=|/=|&=|\\|=|\\^="
+        },
+        {
+          "name": "keyword.operator.step.hive",
+          "match": "\\+\\+|--"
+        },
+        {
+          "name": "keyword.operator.comparison.hive",
+          "match": "==|!=|<=|>="
+        },
+        {
+          "name": "keyword.operator.logical.hive",
+          "match": "&&|\\|\\|"
+        },
+        {
+          "name": "keyword.operator.bitwise.shift.hive",
+          "match": "<<|>>"
+        },
+        {
+          "name": "keyword.operator.arithmetic.hive",
+          "match": "\\*\\*"
+        },
+        {
+          "name": "keyword.operator.comparison.hive",
+          "match": "[<>]"
+        },
+        {
+          "name": "keyword.operator.assignment.hive",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.logical.hive",
+          "match": "!"
+        },
+        {
+          "name": "keyword.operator.bitwise.hive",
+          "match": "[&|^~]"
+        },
+        {
+          "name": "keyword.operator.arithmetic.hive",
+          "match": "[-+*/%]"
+        }
+      ]
+    },
+
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.section.block.begin.hive",
+          "match": "\\{"
+        },
+        {
+          "name": "punctuation.section.block.end.hive",
+          "match": "\\}"
+        },
+        {
+          "name": "punctuation.section.parens.begin.hive",
+          "match": "\\("
+        },
+        {
+          "name": "punctuation.section.parens.end.hive",
+          "match": "\\)"
+        },
+        {
+          "name": "punctuation.section.brackets.begin.hive",
+          "match": "\\["
+        },
+        {
+          "name": "punctuation.section.brackets.end.hive",
+          "match": "\\]"
+        },
+        {
+          "name": "punctuation.separator.comma.hive",
+          "match": ","
+        },
+        {
+          "name": "punctuation.terminator.statement.hive",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.colon.hive",
+          "match": ":"
+        },
+        {
+          "name": "punctuation.accessor.hive",
+          "match": "\\."
+        }
+      ]
+    },
+
+    "variable": {
+      "patterns": [
+        {
+          "name": "variable.language.wildcard.hive",
+          "match": "\\b_\\b"
+        },
+        {
+          "name": "variable.other.property.hive",
+          "match": "(?<=[\\w)\\]\"`]\\.)[a-z_]\\w*\\b"
+        },
+        {
+          "name": "variable.other.hive",
+          "match": "\\b[a-z_]\\w*\\b"
+        }
+      ]
+    },
+
+    "sql-body": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.block.begin.hive" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.block.end.hive" }
+      },
+      "contentName": "meta.embedded.block.sql",
+      "patterns": [
+        { "include": "#sql" }
+      ]
+    },
+
+    "sql": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.sql",
+          "begin": "--",
+          "end": "$|(?=\\})",
+          "patterns": [
+            { "include": "#interpolation" }
+          ]
+        },
+        {
+          "name": "comment.block.sql",
+          "begin": "/\\*",
+          "end": "\\*/|(?=\\})",
+          "patterns": [
+            { "include": "#interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.single.sql",
+          "begin": "'",
+          "end": "'(?!')|(?=\\})",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sql",
+              "match": "''"
+            },
+            { "include": "#interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.double.sql",
+          "begin": "\"",
+          "end": "\"|(?=\\})",
+          "patterns": [
+            { "include": "#interpolation" }
+          ]
+        },
+        { "include": "#sql-where" },
+        { "include": "#interpolation" },
+        {
+          "name": "keyword.other.sql",
+          "match": "\\b(?:ADD|ALL|ALTER|AND|ANY|AS|ASC|AUTOINCREMENT|BEGIN|BETWEEN|BY|CASCADE|CASE|CHECK|COLLATE|COLUMN|COMMIT|CONFLICT|CONSTRAINT|CREATE|CROSS|DEFAULT|DELETE|DESC|DISTINCT|DO|DROP|ELSE|END|EXCEPT|EXISTS|FOREIGN|FROM|FULL|GROUP|HAVING|IF|ILIKE|IN|INDEX|INNER|INSERT|INTERSECT|INTO|IS|JOIN|KEY|LEFT|LIKE|LIMIT|NATURAL|NOT|NOTHING|OFFSET|ON|OR|ORDER|OUTER|PRIMARY|RECURSIVE|REFERENCES|RETURNING|RIGHT|ROLLBACK|SELECT|SET|TABLE|THEN|TRANSACTION|TRUNCATE|UNION|UNIQUE|UPDATE|USING|VALUES|VIEW|WHEN|WHERE|WITH)\\b"
+        },
+        {
+          "name": "storage.type.sql",
+          "match": "\\b(?:BIGINT|BLOB|BOOLEAN|DATE|DOUBLE|INT|INTEGER|NUMERIC|REAL|SERIAL|SMALLINT|TEXT|TIMESTAMP|VARCHAR)\\b"
+        },
+        {
+          "name": "constant.language.sql",
+          "match": "\\b(?:NULL|TRUE|FALSE)\\b"
+        },
+        {
+          "name": "support.function.sql",
+          "match": "\\b[A-Za-z_]\\w*(?=\\()"
+        },
+        {
+          "name": "constant.numeric.sql",
+          "match": "\\b\\d+(?:\\.\\d+)?\\b"
+        },
+        {
+          "name": "keyword.operator.sql",
+          "match": "<>|!=|<=|>=|\\|\\||[-+*/%=<>]"
+        },
+        {
+          "name": "punctuation.separator.comma.sql",
+          "match": ","
+        },
+        {
+          "name": "punctuation.section.parens.begin.sql",
+          "match": "\\("
+        },
+        {
+          "name": "punctuation.section.parens.end.sql",
+          "match": "\\)"
+        }
+      ]
+    },
+
+    "sql-where": {
+      "name": "meta.where.hive",
+      "begin": "\\b((?i:where))\\s*(\\{)",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.sql" },
+        "2": { "name": "punctuation.section.block.begin.hive" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.block.end.hive" }
+      },
+      "patterns": [
+        { "include": "#sql-where-items" }
+      ]
+    },
+
+    "sql-where-items": {
+      "patterns": [
+        {
+          "name": "meta.embedded.line.hive",
+          "begin": "\\b(if)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.hive" }
+          },
+          "end": "(?<=\\})|(?=\\})",
+          "patterns": [
+            { "include": "#sql-body" },
+            { "include": "#code" }
+          ]
+        },
+        {
+          "begin": "\\b(or|and)\\s*(\\{)",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.hive" },
+            "2": { "name": "punctuation.section.block.begin.hive" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.block.end.hive" }
+          },
+          "patterns": [
+            { "include": "#sql-where-items" }
+          ]
+        }
+      ]
+    }
+  }
+}

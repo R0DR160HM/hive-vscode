@@ -1,0 +1,104 @@
+// Something of everything Hive writes, for the grammar's tests and for a look at
+// the colours: `hive run test/sample.hive` runs it.
+import hive.map
+
+type User {
+    id: Int
+    name: Str -- JSON as user_name; Default as "nobody";
+    active: Bool
+}
+
+type Shape {
+    Circle { radius: Int }
+    Rectangle { width: Int, height: Int }
+    Point
+}
+
+query findUsers(name: Str, minId: Int): User[dyn] {
+    SELECT id, name, active FROM users
+    WHERE {
+        if name != "" { name = {name} }
+        or {
+            if minId > 0 { id >= {minId} }
+        }
+    }
+    ORDER BY id -- oldest first
+}
+
+func describe(shape: Shape): Str {
+    if shape is Shape.Circle(r) {
+        return "circle, radius {r}"
+    } else if shape is Shape.Rectangle(w, h) {
+        return "rectangle, {w}x{h}"
+    } else if shape is Shape.Point {
+        return "a point"
+    }
+}
+
+func route(path: Str): Str {
+    if path is "/users/{id is (\d+)}/posts/{rest}" {
+        return "user {id}, then {rest}"
+    }
+    return "404"
+}
+
+proc grow(names: mut Str[dyn], name: Str): void {
+    append(names, name)
+}
+
+func double(n: Int): Int {
+    return n * 2
+}
+
+proc main(): void {
+    MAX_TRIES := 0xFF
+    mut Str[dyn] names = ["ada"]
+    grow(names, "grace")
+    for i := 0; i < 2; i++ {
+        echo i
+    }
+    for each name in names {
+        echo "{name}: {len(name)} characters"
+    }
+    if names bounds 1 {
+        echo names[1]
+    }
+
+    mut hive.map.Map<Str, Int> ages = hive.map.new()
+    hive.map.set(ages, "ada", 36)
+    echo ages
+
+    state := #Ready
+    switch state {
+        #Ready { echo "ready" }
+        _ { echo "not yet" }
+    }
+
+    total := [1, 2, 3] |> map(double) |> len
+    echo total + MAX_TRIES
+
+    slow := double(21) with timeout 500
+    if slow is Result.Ok(n) {
+        echo n
+    }
+    later := async double(4)
+    echo await [double(1), double(2)]
+    echo later
+
+    UInt8[dyn] packet = <<0x45, 0, 1, 2>>
+    if packet is <<version: UInt4, ihl: UInt4, size: UInt16 little, ...rest>> {
+        echo "v{version}, {ihl} words, {size} bytes, {len(rest)} left"
+    }
+
+    echo `
+        raw text, with a \{ brace and {total} spliced in
+    `
+    echo describe(Shape.Circle(2))
+    echo route("/users/7/posts/first")
+    echo hive.conv.itf(1) + 1.5
+    echo findUsers("ada", 0).text
+}
+
+test "a point is described" {
+    assert describe(Shape.Point()) == "a point"
+}
