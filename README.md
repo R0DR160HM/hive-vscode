@@ -1,17 +1,6 @@
 # Hive for VS Code
 
-[Hive](https://github.com/R0DR160HM/hive-lang) in VS Code. A `.hive` file is
-coloured, and the compiler's own language server, `hive lsp`, says the rest:
-
-* **what is wrong**, as you type, in the file and in the files it imports;
-* **what a name is**, on hover: a variable's type, a function's signature, a
-  field, a variant, a library call;
-* **where a name was declared**, with `F12`, in this file or another;
-* **what could come next**, with `Ctrl+Space` or after a `.`: a value's fields,
-  a module's calls, a type's variants, the names in scope;
-* **the file's outline**, and **Format Document**, which reindents the file as
-  `hive indent` would.
-
+[Hive](https://github.com/R0DR160HM/hive-lang) in VS Code.
 ## What it needs
 
 The server is the compiler itself, from **v0.3.7** on:
@@ -40,25 +29,6 @@ $ code --install-extension R0DR160HM.hive-lang
 
 Then open a `.hive` file.
 
-## What is coloured
-
-* **Keywords**, and only their lower-case spelling, which is the only one Hive
-  reserves: `Return` is a name. `timeout`, `as` and `little` are keywords only
-  where they are written as one.
-* **Names by their shape**: a `PascalCase` type, the variant after its `.`, an
-  `UPPER_CASE` constant, an `#Atom`, a call, a builtin, and `hive.` with the
-  module behind it.
-* **Both string forms**, with a `{expression}` inside one read as Hive rather
-  than text, and a string pattern's `{name is (regex)}` read as a regex.
-* **A `query` body as SQL**, with each `{param}` and each condition of a
-  `WHERE { }` block read as Hive. `Ctrl+/` there writes SQL's `--`.
-* **A type's body**: its fields, its variants, and annotations like
-  `-- JSON as user_name;`.
-
-## Snippets
-
-`main`, `proc`, `func`, `query`, `type`, `union`, `test`, `for`, `foreach`,
-`ifis`, `ifbounds` and `switch`.
 
 ## Settings
 

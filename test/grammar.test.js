@@ -199,6 +199,16 @@ test('a type\'s fields, variants and annotations', async () => {
   assert.strictEqual(depth, 1);
 });
 
+test('a flag\'s second name is its short one', async () => {
+  await scoped('type O { b: Bool -- Flag as background-task bg; Default as false; }', [
+    ['Flag', 'entity.other.attribute-name.hive'],
+    ['as', 'keyword.control.as.hive'],
+    ['background-task', 'string.unquoted.hive'],
+    ['bg', 'string.unquoted.hive'],
+    ['Default', 'entity.other.attribute-name.hive'],
+  ]);
+});
+
 test('a declaration\'s name and parameters', async () => {
   await scoped('proc grow(vec: mut Str[dyn], each: func(T): Result<K, E>): void {', [
     ['proc', 'storage.type.function.hive'],

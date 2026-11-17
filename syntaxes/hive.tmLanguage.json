@@ -170,12 +170,14 @@
           "match": "--"
         },
         {
-          "match": "\\b(JSON|URL|Flag)\\s+(as)\\b[ \\t]*(?:(\"(?:[^\"\\\\]|\\\\.)*\")|(\\w+(?:-\\w+)*))?",
+          "match": "\\b(JSON|URL|Flag)\\s+(as)\\b[ \\t]*(?:(\"(?:[^\"\\\\]|\\\\.)*\")|(\\w+(?:-\\w+)*))?(?:[ \\t]+(?:(\"(?:[^\"\\\\]|\\\\.)*\")|(\\w+(?:-\\w+)*)))?",
           "captures": {
             "1": { "name": "entity.other.attribute-name.hive" },
             "2": { "name": "keyword.control.as.hive" },
             "3": { "name": "string.quoted.double.hive" },
-            "4": { "name": "string.unquoted.hive" }
+            "4": { "name": "string.unquoted.hive" },
+            "5": { "name": "string.quoted.double.hive" },
+            "6": { "name": "string.unquoted.hive" }
           }
         },
         {
