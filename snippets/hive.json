@@ -63,6 +63,15 @@
       "}"
     ]
   },
+  "law": {
+    "prefix": "law",
+    "description": "A law, proved for every value of its parameters",
+    "body": [
+      "law ${1:name}(${2:value}: ${3:Int}) {",
+      "\tassert $0",
+      "}"
+    ]
+  },
   "for": {
     "prefix": "for",
     "description": "A counting loop",

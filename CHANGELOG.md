@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+* **`law` is coloured as a declaration**, with its name as a function's, and has a snippet.
+* **`axiom` is marked as an error**: the compiler reserves it and refuses every use.
+* **A law inside a type is coloured as code**, where its body was read as more fields.
+* **A law about a table has its body coloured as SQL**, as a query's is.
+
 ## 0.2.0
 
 * **A `.hive` file is coloured**: keywords, names by their shape, both string forms and what they interpolate, a `query` body as SQL.

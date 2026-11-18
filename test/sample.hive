@@ -99,6 +99,10 @@ proc main(): void {
     echo findUsers("ada", 0).text
 }
 
+law describedAlways(shape: Shape) {
+    assert describe(shape) != ""
+}
+
 test "a point is described" {
     assert describe(Shape.Point()) == "a point"
 }

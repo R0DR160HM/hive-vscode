@@ -6,6 +6,7 @@
     { "include": "#comment" },
     { "include": "#import" },
     { "include": "#query" },
+    { "include": "#table-law" },
     { "include": "#type-declaration" },
     { "include": "#callable-declaration" },
     { "include": "#code" }
@@ -48,11 +49,25 @@
       ]
     },
 
+    "table-law": {
+      "name": "meta.law.table.hive",
+      "begin": "\\b(for)\\s+(table)\\s+([A-Za-z_][\\w.]*)(?=\\s*\\{)",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.for.hive" },
+        "2": { "name": "keyword.other.table.hive" },
+        "3": { "name": "entity.name.type.table.hive" }
+      },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#sql-body" }
+      ]
+    },
+
     "callable-declaration": {
       "patterns": [
         {
           "name": "meta.function.hive",
-          "begin": "\\b(proc|func)\\s+([A-Za-z_]\\w*)\\s*(?=\\()",
+          "begin": "\\b(proc|func|law)\\s+([A-Za-z_]\\w*)\\s*(?=\\()",
           "beginCaptures": {
             "1": { "name": "storage.type.function.hive" },
             "2": { "name": "entity.name.function.hive" }
@@ -63,7 +78,7 @@
           ]
         },
         {
-          "match": "\\b(proc|func)\\s+([A-Za-z_]\\w*)",
+          "match": "\\b(proc|func|law)\\s+([A-Za-z_]\\w*)",
           "captures": {
             "1": { "name": "storage.type.function.hive" },
             "2": { "name": "entity.name.function.hive" }
@@ -126,6 +141,7 @@
     "type-body": {
       "patterns": [
         { "include": "#comment" },
+        { "include": "#type-law" },
         { "include": "#field-annotation" },
         {
           "name": "meta.field.hive",
@@ -160,6 +176,20 @@
           "name": "punctuation.separator.comma.hive",
           "match": ","
         }
+      ]
+    },
+
+    "type-law": {
+      "name": "meta.function.law.hive",
+      "begin": "\\b(law)\\s+([A-Za-z_]\\w*)\\s*(?=\\()",
+      "beginCaptures": {
+        "1": { "name": "storage.type.function.hive" },
+        "2": { "name": "entity.name.function.hive" }
+      },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#parameters" },
+        { "include": "#braces" }
       ]
     },
 
@@ -501,7 +531,11 @@
         },
         {
           "name": "storage.type.hive",
-          "match": "\\b(?:proc|func|query|type|test)\\b"
+          "match": "\\b(?:proc|func|query|type|test|law)\\b"
+        },
+        {
+          "name": "invalid.illegal.reserved.hive",
+          "match": "\\baxiom\\b"
         },
         {
           "name": "keyword.control.import.hive",

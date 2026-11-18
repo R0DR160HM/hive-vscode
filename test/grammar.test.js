@@ -87,6 +87,45 @@ test('keywords', async () => {
   ]);
 });
 
+test('a law is declared like a callable, and axiom is reserved', async () => {
+  await scoped('law holds(n: Int) { assert n == n }', [
+    ['law', 'storage.type.function.hive'],
+    ['holds', 'entity.name.function.hive'],
+    ['assert', 'keyword.control.hive'],
+  ]);
+  await scoped('axiom := 1', [['axiom', 'invalid.illegal.reserved.hive']]);
+});
+
+test('a law about a table has a SQL body, and `for table` is only that', async () => {
+  const depth = await scoped([
+    'law ownChats(contact: Contact) for table chats {',
+    '    fk_from = {contact.id} OR fk_to = {contact.id}',
+    '}',
+    'proc main(): void { for table := 0; table < 3; table++ { } }',
+  ].join('\n'), [
+    ['law', 'storage.type.function.hive'],
+    ['ownChats', 'entity.name.function.hive'],
+    ['for', 'keyword.other.for.hive'],
+    ['table', 'keyword.other.table.hive'],
+    ['chats', 'entity.name.type.table.hive'],
+    ['contact', 'meta.embedded.line.hive'],
+    ['OR', 'keyword.other.sql'],
+    ['proc', '!meta.law.table'],
+    ['table', '!keyword.other.table'],
+  ]);
+  assert.strictEqual(depth, 1);
+});
+
+test('a law inside a type is code, not fields', async () => {
+  await scoped('type Stay { nights: Int\n  law positive(s: Stay) { if s.nights > 0 { assert true } } }', [
+    ['nights', 'variable.other.member.hive'],
+    ['law', 'storage.type.function.hive'],
+    ['positive', 'entity.name.function.hive'],
+    ['if', 'keyword.control.hive'],
+    ['assert', 'keyword.control.hive'],
+  ]);
+});
+
 test('only a keyword\'s lower-case spelling is one', async () => {
   await scoped('Return := IF', [['Return', '!keyword'], ['IF', '!keyword']]);
   await scoped('timeout := 3', [['timeout', 'variable.other.hive']]);
